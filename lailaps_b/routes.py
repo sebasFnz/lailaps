@@ -1,16 +1,23 @@
-from tornado.web import RequestHandler
+from tornado import web,escape
 import instaloader
+import requests
+from bs4 import BeautifulSoup
+import agent
 import json
 import sys
 
 
-class instagramHandler(RequestHandler):
+class instagramHandler(web.RequestHandler):
 
-    def get(self):
+    def post(self):
 
-        user_ig  = ""
-        pass_ig = ""
-        user =
+        self.args = escape.xhtml_escape(self.request.body).split("=")
+
+        # print(self.args.split("=",1))
+        user_ig  =
+        pass_ig =
+        user = self.args[1]
+
         L = instaloader.Instaloader()
 
 
@@ -49,3 +56,43 @@ class instagramHandler(RequestHandler):
         }
 
         self.write({"success":True,"resp":userData})
+
+
+
+class tiktokHandler(web.RequestHandler):
+
+    def post(self):
+        self.args = escape.xhtml_escape(self.request.body).split("=")
+
+
+        url = "https://www.tiktok.com/@%s/" % self.args[1]
+        req = requests.get(url, headers={'User-Agent': agent.user_agent()})
+        if req.status_code == 200:
+            print(req.status_code)
+            soup = BeautifulSoup(req.text, "html.parser")
+
+
+
+        try:
+            content = soup.find_all("script",attrs={"type":"application/json","crossorigin":"anonymous"})
+            content = json.loads(content[0].contents[0])
+
+            user = content["props"]["pageProps"]["userInfo"]
+            # stat = content["props"]["pageProps"]["userInfo"]
+
+            tiktokData = {
+                "userId": user["user"]["id"],
+                "username": user["user"]["uniqueId"],
+                "nickname": user["user"]["nickname"],
+                "avatar": user["user"]["avatarMedium"],
+                "bio": user["user"]["signature"],
+                "createTime": user["user"]["createTime"],
+                "verified": user["user"]["verified"],
+                "follower": user["stats"]["followerCount"],
+                "following": user["stats"]["followingCount"],
+                "heart": user["stats"]["heart"]
+            }
+
+            self.write({"success":"content","data":tiktokData})
+        except:
+            self.write({"success":False,"status":400})

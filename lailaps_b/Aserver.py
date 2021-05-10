@@ -2,7 +2,8 @@ from tornado import web,ioloop,httpclient,escape
 import routes
 
 application = web.Application([
-    ("/instagram",routes.instagramHandler)
+    ("/instagram",routes.instagramHandler),
+    ("/tiktok",routes.tiktokHandler)
 ],debug=True)
 
 if __name__ == '__main__':
