@@ -3,7 +3,8 @@ import routes
 
 application = web.Application([
     ("/instagram",routes.instagramHandler),
-    ("/tiktok",routes.tiktokHandler)
+    ("/tiktok",routes.tiktokHandler),
+    ("/usersearch",routes.userSearchHandler)
 ],debug=True)
 
 if __name__ == '__main__':

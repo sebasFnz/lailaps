@@ -1,3 +1,4 @@
 tornado
 instaloader
 beautifulsoup4
+lxml
